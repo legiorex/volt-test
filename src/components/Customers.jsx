@@ -13,21 +13,37 @@ import {api} from '../api.js';
 
 class Header extends Component {
 
-  // test = async () => {
-  //    const response =  fetch('localhost:8000/api/customers', {
+   test = async () => {
+    
+     const a = await api.fetchUsers()
+    return a;
+    
+  }
+  // async fetchUsers() {
+  //   const response = await fetch('http://localhost:8000/api/customers', {
   //     method: 'GET',
   //   });
-  //   // return await response.json();
-  //   console.log( await response.json())
+
+  //   const users = await response.json();
+  //   console.log(users)
+  //   return users;
+  
   // }
   
 
   render() {
-    const test = api.fetchUsers()
-    for(let item in test){
-      console.log(item)
-    }
-    console.log(typeof test)
+    this.test()
+    // const test = () => {
+    //   console.log('test')
+    // }
+    // console.log(this.test())
+    
+    
+    // const test = api.fetchUsers()
+    // for(let item in test){
+    //   console.log(item)
+    // }
+    // console.log(test)
     
     return(
       <Grid>

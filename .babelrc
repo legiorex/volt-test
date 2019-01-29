@@ -1,13 +1,23 @@
 {
-  "presets": ["react", "env"],
-  "plugins": [
+  "presets": [
     [
-      "transform-runtime",
+      "@babel/preset-env",
       {
-        "polyfill": false,
-        "regenerator": true
-      }
-    ],
-    "transform-es2015-arrow-functions"
+          "useBuiltIns": "usage",
+          "shippedProposals": true,
+          "spec": true,
+          "loose": false,
+          "debug": false,
+          
+      },
+  ],
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-modules-amd",
+    "@babel/plugin-transform-async-to-generator",
+    "transform-es2015-arrow-functions",
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    "@babel/plugin-syntax-dynamic-import"
   ]
 }

@@ -7,7 +7,9 @@ export const api = {
     const response = await fetch('http://localhost:8000/api/customers', {
       method: 'GET',
     });
+
     const users = await response.json();
+    console.log(users)
     return users;
   
   }
