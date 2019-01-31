@@ -1,16 +1,38 @@
-// const MAIN_URL = './api/customers';
-
-
 export const api = {
 
-  async fetchUsers() {
-    const response = await fetch('http://localhost:8000/api/customers', {
-      method: 'GET',
-    });
+  async getUsers() {
+    const response = await fetch('./api/customers', { method: "GET" });
+    const users = await response.json();    
+    return users;  
+  },
 
-    const users = await response.json();
-    console.log(users)
-    return users;
-  
+  async setUser(user) {
+    await fetch("./api/customers", {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    });    
+  },
+  async delUser(id) {
+    await fetch(`./api/customers/${id}`, { method: "DELETE"});
+  },
+  async editUser(id, user) {
+    await fetch(`./api/customers/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(user)
+    });
+  },
+
+  async getProducts() {
+    const response = await fetch('./api/products', {method: "GET" });
+    const products = await response.json();
+    return products;
   }
+
+
 };

@@ -1,98 +1,155 @@
-import React, { Component } from 'react';
-import {render} from "react-dom";
-import Grid  from 'react-bootstrap/lib/Grid';
-import Row  from 'react-bootstrap/lib/Row';
-import Col  from 'react-bootstrap/lib/Col';
-import Nav from 'react-bootstrap/lib/Nav';
-import Navbar from 'react-bootstrap/lib/Navbar';
-import PageHeader  from 'react-bootstrap/lib/PageHeader';
-import Button  from 'react-bootstrap/lib/Button';
-import Table  from 'react-bootstrap/lib/Table';
+// Core
+import React, { Component, createRef } from "react";
 
+import Container from "react-bootstrap/Container";
+import Row  from 'react-bootstrap/Row';
+import Col  from 'react-bootstrap/Col';
+
+import Button  from 'react-bootstrap/Button';
+import Table  from 'react-bootstrap/Table';
+
+// Instruments
 import {api} from '../api.js';
 
-class Header extends Component {
+// Components
+import CreateUser from './CreateUser'
+import EditUser from "./EditUser";
 
-   test = async () => {
-    
-     const a = await api.fetchUsers()
-    return a;
-    
+class Customers extends Component {
+  state = {
+    users: [],
+    changeUser: {},
+    createUser: false,
+    editUser: false
+  };
+
+  componentDidMount() {
+    this._getUsers();
   }
-  // async fetchUsers() {
-  //   const response = await fetch('http://localhost:8000/api/customers', {
-  //     method: 'GET',
-  //   });
 
-  //   const users = await response.json();
-  //   console.log(users)
-  //   return users;
-  
-  // }
-  
+  _getUsers = async () => {
+    const users = await api.getUsers();
+    this.setState({ users });
+  };
+
+  _createUserAsync = async user => {
+    await api.setUser(user);
+    this._getUsers();
+    this.setState({ createUser: false });
+  };
+
+  _delUserAsync = async event => {
+    const currentId = event.target.parentNode.parentNode.dataset.id;
+    await api.delUser(currentId);
+    this._getUsers();
+  };
+
+  _editUserAsync = async (id, user) => {
+    
+    await api.editUser(id, user);
+    this._getUsers();
+    this.setState({ editUser: false });
+  };
+
+  _getCurrentUser = event => {
+    const currentId = event.target.parentNode.parentNode.dataset.id;
+    const currentUserName =
+      event.target.parentNode.parentNode.children[3].dataset.name;
+    const currentUserAddress =
+      event.target.parentNode.parentNode.children[4].dataset.address;
+    const currentUserPhone =
+      event.target.parentNode.parentNode.children[5].dataset.phone;
+
+    const changeUser = {
+      id: currentId,
+      name: currentUserName,
+      address: currentUserAddress,
+      phone: currentUserPhone
+    };
+
+    this.setState({
+      changeUser: changeUser,
+      editUser: true
+    });   
+  };
+
+  _createTable = () => {
+    const { users } = this.state;
+    return users.map((user, index) => {
+      return (
+        <tr key={user.id} data-id={user.id}>
+          <td>{++index}</td>
+          <td>
+            <Button variant="danger" onClick={this._delUserAsync}>
+              Del
+            </Button>
+          </td>
+          <td>
+            <Button variant="info" onClick={this._getCurrentUser}>
+              Edit
+            </Button>
+          </td>
+          <td data-name={user.name}>{user.name}</td>
+          <td data-address={user.address}>{user.address}</td>
+          <td data-phone={user.phone}>{user.phone}</td>
+        </tr>
+      );
+    });
+  };
+  _openCreateUser = () => {
+    this.setState({ createUser: true });
+  };
+
+  _closeCreateUser = () => {
+    this.setState({ createUser: false });
+  };
+
+  _openEditUser = () => {
+    this.setState({ editUser: true });
+  };
+
+  _closeEditUser = () => {
+    this.setState({ editUser: false });
+  };
 
   render() {
-    this.test()
-    // const test = () => {
-    //   console.log('test')
-    // }
-    // console.log(this.test())
-    
-    
-    // const test = api.fetchUsers()
-    // for(let item in test){
-    //   console.log(item)
-    // }
-    // console.log(test)
-    
-    return(
-      <Grid>
-      <Row>
-      <PageHeader>
-        <Col lg={3}>
-          Customer list
-        </Col>
-        <Col >
-          <Button>Create</Button>
-        </Col>
-        </PageHeader>
-      </Row>
-
-      <Table >
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Phone</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</Table>;
-        
-        
-
-      </Grid>
-      
-    )
+    return (
+      <Container>
+        <Row>
+          <Col lg={3}>
+            <h1>Customer list</h1>
+          </Col>
+          <Col>
+            <Button onClick={this._openCreateUser}>Create</Button>
+            <CreateUser
+              _createUserAsync={this._createUserAsync}
+              show={this.state.createUser}
+              onHide={this._closeCreateUser}
+            />
+            <EditUser
+              _editUserAsync={this._editUserAsync}
+              show={this.state.editUser}
+              onHide={this._closeEditUser}
+              changeUser={this.state.changeUser}
+            />
+          </Col>
+        </Row>
+        <Table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>DEL</th>
+              <th>EDIT</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody>{this._createTable()}</tbody>
+        </Table>
+      </Container>
+    );
   }
 }
-export default Header;
+export default Customers;
+
