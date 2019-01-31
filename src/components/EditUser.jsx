@@ -7,7 +7,9 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
 
-class EditUser extends Component {  
+class EditUser extends Component {
+
+  newUserForm = createRef();
 
   _handleSubmit = event => {
     const { _editUserAsync, changeUser } = this.props;
@@ -21,19 +23,14 @@ class EditUser extends Component {
     _editUserAsync(changeUser.id, user);
   };
 
-
   _currentUserTable = () => {
-    const { changeUser } = this.props;    
-    return(
-      <Form onSubmit={this._handleSubmit} ref={this.newUserForm}>
+    const { changeUser } = this.props;
+    return (
+      <Form ref={this.newUserForm}>
         <Form.Row>
           <Form.Group as={Col} controlId="userName">
             <Form.Label>User Name</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              defaultValue={changeUser.name}
-            />
+            <Form.Control required type="text" defaultValue={changeUser.name} />
           </Form.Group>
           <Form.Group as={Col} controlId="address">
             <Form.Label>Address</Form.Label>
@@ -53,11 +50,11 @@ class EditUser extends Component {
           </Form.Group>
         </Form.Row>
       </Form>
-    )
-  }
+    );
+  };
 
   render() {
-    const { changeUser } = this.props;    
+    const { changeUser } = this.props;
     return (
       <Modal
         show={this.props.show}
@@ -70,9 +67,7 @@ class EditUser extends Component {
             Edit user {changeUser.name}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {this._currentUserTable()}
-        </Modal.Body>
+        <Modal.Body>{this._currentUserTable()}</Modal.Body>
         <Modal.Footer>
           <Button variant="success" type="submit" onClick={this._handleSubmit}>
             Save

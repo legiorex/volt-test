@@ -14,13 +14,16 @@ import {api} from '../api.js';
 // Components
 import CreateUser from './CreateUser'
 import EditUser from "./EditUser";
+import DelUser from "./DelUser";
 
 class Customers extends Component {
   state = {
     users: [],
     changeUser: {},
     createUser: false,
-    editUser: false
+    editUser: false,
+    delUser: false,
+    userId: '',
   };
 
   componentDidMount() {
@@ -35,20 +38,19 @@ class Customers extends Component {
   _createUserAsync = async user => {
     await api.setUser(user);
     this._getUsers();
-    this.setState({ createUser: false });
+    this._closeCreateUser();
   };
 
-  _delUserAsync = async event => {
-    const currentId = event.target.parentNode.parentNode.dataset.id;
-    await api.delUser(currentId);
+  _delUserAsync = async (id) => {
+    await api.delUser(id);
     this._getUsers();
+    this._closeDelUser();
   };
 
   _editUserAsync = async (id, user) => {
-    
     await api.editUser(id, user);
     this._getUsers();
-    this.setState({ editUser: false });
+    this._closeEditUser();
   };
 
   _getCurrentUser = event => {
@@ -70,7 +72,7 @@ class Customers extends Component {
     this.setState({
       changeUser: changeUser,
       editUser: true
-    });   
+    });
   };
 
   _createTable = () => {
@@ -80,7 +82,7 @@ class Customers extends Component {
         <tr key={user.id} data-id={user.id}>
           <td>{++index}</td>
           <td>
-            <Button variant="danger" onClick={this._delUserAsync}>
+            <Button variant="danger" onClick={this._openDelUser}>
               Del
             </Button>
           </td>
@@ -111,6 +113,14 @@ class Customers extends Component {
   _closeEditUser = () => {
     this.setState({ editUser: false });
   };
+  _openDelUser = () => {
+    const currentId = event.target.parentNode.parentNode.dataset.id;
+    this.setState({ delUser: true, userId: currentId });
+  };
+
+  _closeDelUser = () => {
+    this.setState({ delUser: false });
+  };
 
   render() {
     return (
@@ -131,6 +141,13 @@ class Customers extends Component {
               show={this.state.editUser}
               onHide={this._closeEditUser}
               changeUser={this.state.changeUser}
+            />
+            <DelUser
+              _delUserAsync={this._delUserAsync}
+              show={this.state.delUser}
+              onHide={this._closeDelUser}
+              changeUser={this.state.changeUser}
+              userId={this.state.userId} 
             />
           </Col>
         </Row>
